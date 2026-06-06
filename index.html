@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imposter Myanmar Game</title>
+    <link rel="stylesheet" href="imposter_mm.css">
+</head>
+
+<body>
+
+    <div id="game-container">
+        <button id="mute-btn" class="mute-btn" onclick="toggleMute()" title="Toggle Sound">
+            <span id="mute-icon">🔊</span>
+        </button>
+
+        <div id="setup-screen">
+            <header class="app-header">
+                <h1>Imposter MM</h1>
+                <p class="app-subtitle">လူလိမ်(Imposter) ရှာဖွေဂိမ်း</p>
+            </header>
+
+            <section class="setup-section">
+                <h2 class="section-title">ဂိမ်းပုံစံ</h2>
+                <div class="mode-selector">
+                    <button type="button" class="mode-card active" data-mode="classic" onclick="setGameMode('classic')">
+                        <span class="mode-name">Classic</span>
+                        <span class="mode-desc">လူလိမ်(Imposter)ကို သိပြီး ကစားမည်</span>
+                    </button>
+                    <button type="button" class="mode-card" data-mode="secret" onclick="setGameMode('secret')">
+                        <span class="mode-name">Secret</span>
+                        <span class="mode-desc">စကားလုံး ၂ မျိုး — လူလိမ်(Imposter)မသိ</span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="setup-section">
+                <h2 class="section-title">ကစားသမား</h2>
+                <div class="setting-row">
+                    <span class="setting-label">အရေအတွက်</span>
+                    <div class="stepper">
+                        <button type="button" onclick="changeValue('player-count', -1)" aria-label="လျှော့မည်">−</button>
+                        <input type="number" id="player-count" value="3" readonly>
+                        <button type="button" onclick="changeValue('player-count', 1)" aria-label="တိုးမည်">+</button>
+                    </div>
+                </div>
+                <div id="player-names-section" class="player-names-section">
+                    <div id="player-names-list"></div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">လူလိမ်(Imposter)</span>
+                    <div class="stepper">
+                        <button type="button" onclick="changeValue('imposter-count', -1)" aria-label="လျှော့မည်">−</button>
+                        <input type="number" id="imposter-count" value="1" readonly>
+                        <button type="button" onclick="changeValue('imposter-count', 1)" aria-label="တိုးမည်">+</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="setup-section">
+                <h2 class="section-title">ဂိမ်းဆက်တင်များ</h2>
+                <div class="setting-row">
+                    <span class="setting-label">ဆွေးနွေးချိန် (မိနစ်)</span>
+                    <div class="stepper">
+                        <button type="button" onclick="changeTimer(-1)" aria-label="လျှော့မည်">−</button>
+                        <input type="number" id="timer-display" value="2" readonly>
+                        <button type="button" onclick="changeTimer(1)" aria-label="တိုးမည်">+</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Round</span>
+                    <div class="stepper">
+                        <button type="button" onclick="changeValue('round-count', -1)" aria-label="လျှော့မည်">−</button>
+                        <input type="number" id="round-count" value="3" readonly>
+                        <button type="button" onclick="changeValue('round-count', 1)" aria-label="တိုးမည်">+</button>
+                    </div>
+                </div>
+                <p class="setting-hint">စကားလုံးအသစ် → ဆွေးနွေး → မဲပေးခြင်း</p>
+
+                <div id="hint-mode-row" class="hint-toggle-row">
+                    <label class="hint-toggle-label" for="hint-mode-toggle">
+                        Hint Mode
+                        <span class="hint-toggle-desc">လူလိမ်(Imposter)သို့ အရိပ်အမြွက်ပေးမည်</span>
+                    </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="hint-mode-toggle" onchange="toggleHintMode(this)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="setup-section">
+                <h2 class="section-title">အမျိုးအစား</h2>
+                <p id="category-hint" class="category-hint">တစ်ခုထက်ပိုရွေးနိုင်သည်</p>
+                <label id="select-all-box" class="category-box">
+                    <input type="checkbox" id="select-all" onclick="toggleAllCategories(this)" checked>
+                    <span>အားလုံးရွေးမည်</span>
+                </label>
+
+                <div id="category-list" class="category-grid">
+                    <label class="category-card">
+                        <input type="checkbox" value="food" checked onchange="handleIndividualChange()">
+                        🍽️ <span>အစားအစာ</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="places" checked onchange="handleIndividualChange()">
+                        🏞️ <span>နေရာများ</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="culture" checked onchange="handleIndividualChange()">
+                        🎎 <span>ယဉ်ကျေးမှု</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="nature" checked onchange="handleIndividualChange()">
+                        🌿 <span>သဘာဝ</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="animals" checked onchange="handleIndividualChange()">
+                        🐾 <span>တိရစ္ဆာန်</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="daily" checked onchange="handleIndividualChange()">
+                        🏠 <span>နေ့စဉ်ဘဝ</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="people" checked onchange="handleIndividualChange()">
+                        <span>လူ</span>
+                    </label>
+                    <label class="category-card">
+                        <input type="checkbox" value="things" checked onchange="handleIndividualChange()">
+                        <span>ပစ္စည်းများ</span>
+                    </label>
+                </div>
+            </section>
+
+            <button class="btn btn-blue btn-start" onclick="startGame()">ဂိမ်းစတင်မည်</button>
+
+            <p class="setup-footer">
+                <a href="#" onclick="toggleRules(true); return false;" class="help-link">ကစားနည်း ဖတ်ရန်</a>
+            </p>
+        </div>
+
+        <div id="game-screen" style="display: none;"></div>
+    </div>
+
+    <div id="rules-modal" class="modal">
+        <div class="modal-content">
+            <h2>ကစားနည်း လမ်းညွှန်</h2>
+            <div class="rules-text">
+                <p><strong>Classic Mode:</strong> ကစားသမားအရေအတွက်နှင့် လူလိမ်(Imposter)အရေအတွက်ကို ရွေးချယ်ပါ။
+                    အမျိုးအစားများကို ရွေးချယ်ပါ။ လူလိမ်(Imposter)ဖြစ်ပါက "လူလိမ်(Imposter)" ဟု ပြနေပါလိမ့်မည်။</p>
+                <p><strong>Secret Mode:</strong> အမျိုးအစားတစ်ခုသာ ရွေးပါ။ အများစုက စကားလုံးတစ်ခု၊
+                    လူလိမ်(Imposter)များက မတူသော စကားလုံးတစ်ခု ရရှိပါမည်။ လူလိမ်(Imposter)ကိုယ်တိုင်လည်း မသိပါ။</p>
+                <p><strong>စကားလုံးကြည့်ခြင်း:</strong> ဖုန်းကို တစ်ယောက်ပြီးတစ်ယောက် ကိုင်ကာ မိမိ၏ စကားလုံးကို
+                    လျှို့ဝှက်ကြည့်ပါ။</p>
+                <p><strong>ဆွေးနွေးခြင်း:</strong> အားလုံးကြည့်ပြီးပါက ဆွေးနွေးချိန်စပါမည်။ မိမိရရှိထားသော
+                    စကားလုံးကို တိုက်ရိုက်မပြောဘဲ ပတ်ဝန်းကျင် အရိပ်အမြွက် စကားလုံးများဖြင့် ဖလှယ်ကြပါ။</p>
+                <p><strong>ရည်ရွယ်ချက်:</strong> ရိုးရိုးကစားသမားများက ဘယ်သူဟာ လူလိမ်(Imposter)လဲ (သို့မဟုတ် မတူသော
+                    စကားလုံးရသူ) ဆိုတာကို ရှာဖွေရမှာဖြစ်ပါတယ်။</p>
+                <p><strong>မဲပေးခြင်း:</strong> ဆွေးနွေးပြီးနောက် တစ်ယောက်ချင်းစီ လူလိမ်(Imposter)ဟု သံသယရှိသူကို
+                    မဲပေးပါ။ အများဆုံး မဲရရှိသူများထဲတွင် လူလိမ်(Imposter)အားလုံး ပါဝင်ပါက ရိုးရိုးကစားသမားများ အနိုင်ရပါသည်။
+                    မဟုတ်ပါက လူလိမ်(Imposter)များ အနိုင်ရပါသည်။</p>
+                <p><strong>Round အရေအတွက်:</strong> ပုံမှန် ၃ Round ကစားနိုင်သည်။ Round တိုင်းတွင် စကားလုံးအသစ်
+                    ရရှိပြီး ဆွေးနွေးပြီး မဲပေးကြပါ။</p>
+            </div>
+            <button class="btn btn-blue" onclick="toggleRules(false)">နားလည်ပါပြီ</button>
+        </div>
+    </div>
+    <audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
