@@ -100,19 +100,15 @@ export function showDiscussionScreen() {
     ? "စကားလုံး မတူသူကို ရှာဖွေပြီး မဲပေးကြပါ"
     : "Imposter ကို ရှာဖွေပြီး မဲပေးကြပါ";
 
-  const revealBtnText = isSecret
-    ? "အဖြေကြည့်မည်"
-    : "(Imposter) လူလိမ်ကို ကြည့်မည်";
-
   $("game-screen").innerHTML = `
         <div class="result-card">
             <h1 class="red-text">ဆွေးနွေးချိန်!</h1>
             <div id="timer-box" style="font-size: 2rem; margin: 10px 0; color: var(--accent-yellow);">ဆွေးနွေးချိန်: ${state.discussionMinutes} မိနစ်</div>
             <p>${discussionText}</p>
             <div class="starter-box">စတင်ဆွေးနွေးရမည့်သူ<br><span>${starterName}</span></div>
-            <div id="result-area" class="hidden-result"></div>
-            <button id="reveal-btn" class="btn btn-blue" onclick="revealImposters()">${revealBtnText}</button>
-            <button class="btn btn-blue" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>
+            <button id="vote-btn" class="btn btn-blue" onclick="startVoting()">မဲပေးမည်</button>
+            <button id="reveal-btn" class="btn btn-secondary" onclick="revealImposters()">အဖြေတိုက်ရိုက် ကြည့်မည်</button>
+            <button class="btn btn-secondary" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>
         </div>`;
 
   startCountdown();
@@ -169,35 +165,31 @@ export function revealImposters() {
   if (window.navigator && window.navigator.vibrate) {
     window.navigator.vibrate([60, 50, 60]);
   }
-  playSound('success');
+  playSound("success");
 
   const list = state.imposters.map((i) => getPlayerName(i)).join(", ");
-  const sound = $("reveal-sound");
+  const isSecret = state.gameMode === "secret";
 
-  if (sound) {
-    sound.pause();
-    sound.currentTime = 0;
-    sound.play().catch((error) => { console.warn("Reveal sound playback prevented:", error); });
-  }
+  const revealBlock = isSecret
+    ? `
+      <p>လူလိမ်များ (မတူသော စကားလုံးရသူ):</p>
+      <h3 class="red-text">${list}</h3>
+      <p>အများစု စကားလုံး:</p>
+      <h3 class="green-text">${state.secretWord}</h3>
+      <p>လူလိမ် စကားလုံး:</p>
+      <h3 class="yellow-text">${state.imposterWord}</h3>`
+    : `
+      <p>(Imposters) လူလိမ်များမှာ:</p>
+      <h3 class="red-text">${list}</h3>
+      <p>စကားလုံး:</p>
+      <h3 class="green-text">${state.secretWord}</h3>`;
 
-  if (state.gameMode === "secret") {
-    $("result-area").innerHTML = `
-    <p>လူလိမ်များ (မတူသော စကားလုံးရသူ):</p>
-    <h3 class="red-text">${list}</h3>
-    <p>အများစု စကားလုံး:</p>
-    <h3 class="green-text">${state.secretWord}</h3>
-    <p>လူလိမ် စကားလုံး:</p>
-    <h3 class="yellow-text">${state.imposterWord}</h3>
-  `;
-  } else {
-    $("result-area").innerHTML = `
-    <p>(Imposters) လူလိမ်များမှာ:</p>
-    <h3 class="red-text">${list}</h3>
-    <p>စကားလုံး:</p>
-    <h3 class="green-text">${state.secretWord}</h3>
-  `;
-  }
-
-  $("result-area").style.display = "block";
-  $("reveal-btn").style.display = "none";
+  $("game-screen").innerHTML = `
+    <div class="result-card">
+      <h1 class="yellow-text">အဖြေ</h1>
+      <div class="hidden-result" style="display:block;">
+        ${revealBlock}
+      </div>
+      <button class="btn btn-blue" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>
+    </div>`;
 }

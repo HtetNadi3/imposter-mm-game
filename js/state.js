@@ -9,7 +9,10 @@ export const state = {
     useWords: [], 
     discussionMinutes: 2,
     hintMode: false,
-    gameMode: "classic"
+    gameMode: "classic",
+    votes: [],
+    currentVoter: 0,
+    voteOrder: []
 };
 
 export function getPlayerName(index) {
