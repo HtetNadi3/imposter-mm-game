@@ -2,13 +2,72 @@ import { $ } from "./dom.js";
 import { state } from "./state.js";
 import { playSound } from "./audio.js";
 
+function getMaxImposters(playerCount) {
+  if (playerCount % 2 === 0) {
+    return playerCount / 2;
+  } else {
+    return (playerCount - 1) / 2;
+  }
+}
+
+function syncStepperDisplay(inputId, displayId) {
+  const input = $(inputId);
+  const display = $(displayId);
+  if (input && display) display.textContent = input.value;
+}
+
+function updatePlayersDisplay() {
+  const count = +$("player-count").value;
+  syncStepperDisplay("player-count", "player-count-display");
+  const display = $("players-display");
+  if (display) display.textContent = `${count} active`;
+}
+
+function updateCategoriesDisplay() {
+  const display = $("categories-display");
+  if (!display) return;
+  const checked = document.querySelectorAll("#category-list input:checked").length;
+  const total = document.querySelectorAll("#category-list input").length;
+  if (state.gameMode === "secret") {
+    const selected = document.querySelector("#category-list input:checked");
+    const label = selected?.closest(".category-card")?.querySelector("span:last-child")?.textContent?.trim();
+    display.textContent = label || "1 selected";
+    return;
+  }
+  display.textContent = checked === total ? "All selected" : `${checked} selected`;
+}
+
+export function toggleModePicker() {
+  playSound("click");
+  $("mode-picker")?.classList.toggle("open");
+  $("mode-row")?.classList.toggle("expanded");
+}
+
+export function togglePlayerNames() {
+  playSound("click");
+  $("player-names-section")?.classList.toggle("open");
+  $("players-row")?.classList.toggle("expanded");
+}
+
+export function toggleCategories() {
+  playSound("click");
+  $("categories-panel")?.classList.toggle("open");
+  $("categories-row")?.classList.toggle("expanded");
+}
+
 export function setGameMode(mode) {
   playSound("click");
   state.gameMode = mode;
 
-  document.querySelectorAll(".mode-card").forEach((el) => {
+  document.querySelectorAll(".mode-option").forEach((el) => {
     el.classList.toggle("active", el.dataset.mode === mode);
   });
+
+  const modeDisplay = $("mode-display");
+  if (modeDisplay) modeDisplay.textContent = mode === "classic" ? "Classic" : "Secret";
+
+  $("mode-picker")?.classList.remove("open");
+  $("mode-row")?.classList.remove("expanded");
 
   const hintRow = $("hint-mode-row");
   const selectAllBox = $("select-all-box");
@@ -24,6 +83,7 @@ export function setGameMode(mode) {
   }
 
   syncCategoryInputs(mode);
+  updateCategoriesDisplay();
 }
 
 function syncCategoryInputs(mode) {
@@ -51,12 +111,17 @@ export function toggleAllCategories(source) {
   document
     .querySelectorAll("#category-list input")
     .forEach((cb) => (cb.checked = source.checked));
+  updateCategoriesDisplay();
 }
 
 export function handleIndividualChange() {
-  if (state.gameMode === "secret") return;
+  if (state.gameMode === "secret") {
+    updateCategoriesDisplay();
+    return;
+  }
   const checks = [...document.querySelectorAll("#category-list input")];
   $("select-all").checked = checks.every((cb) => cb.checked);
+  updateCategoriesDisplay();
 }
 
 export function getSelectedCategories() {
@@ -91,6 +156,8 @@ export function renderPlayerNameInputs() {
     row.appendChild(input);
     list.appendChild(row);
   }
+
+  updatePlayersDisplay();
 }
 
 export function collectPlayerNames() {
@@ -106,26 +173,36 @@ export function changeValue(id, delta) {
   if (!input) return;
   let val = parseInt(input.value) + delta;
 
-  // Set logic limits
   if (id === "player-count") {
     if (val < 3) val = 3;
     if (val > 12) val = 12;
     input.value = val;
     renderPlayerNameInputs();
+    const maxImp = getMaxImposters(val);
+    const impInput = $("imposter-count");
+    if (impInput) {
+      if (+impInput.value > maxImp) impInput.value = maxImp;
+      syncStepperDisplay("imposter-count", "imposter-count-display");
+    }
   } else if (id === "imposter-count") {
+    const playerCount = +$("player-count").value;
+    const maxImp = getMaxImposters(playerCount);
     if (val < 1) val = 1;
-    if (val > 5) val = 5;
+    if (val > maxImp) val = maxImp;
     input.value = val;
+    syncStepperDisplay("imposter-count", "imposter-count-display");
   } else if (id === "round-count") {
     if (val < 1) val = 1;
     if (val > 10) val = 10;
     input.value = val;
+    syncStepperDisplay("round-count", "round-count-display");
   } else if (id === "timer-value") {
     if (val < 1) val = 1;
     if (val > 10) val = 10;
     input.value = val;
   }
 }
+
 export function toggleRules(show) {
   const modal = $("rules-modal");
   modal.style.display = show ? "flex" : "none";
@@ -150,9 +227,18 @@ export function changeTimer(delta) {
     if (displayInput) {
       displayInput.value = state.discussionMinutes;
     }
+    syncStepperDisplay("timer-display", "timer-display-value");
   }
 }
 
 export function toggleHintMode(checkbox) {
   state.hintMode = checkbox.checked;
+}
+
+export function initSetupUI() {
+  updatePlayersDisplay();
+  syncStepperDisplay("imposter-count", "imposter-count-display");
+  syncStepperDisplay("round-count", "round-count-display");
+  syncStepperDisplay("timer-display", "timer-display-value");
+  updateCategoriesDisplay();
 }
