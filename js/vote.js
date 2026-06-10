@@ -1,12 +1,15 @@
 import { state, getPlayerName } from "./state.js";
 import { $ } from "./dom.js";
 import { playSound } from "./audio.js";
+import { stopDiscussionTimer } from "./ui.js";
 
 export function startVoting() {
+  stopDiscussionTimer();
   playSound("click");
   state.votes = new Array(state.totalPlayers).fill(null);
   state.voteOrder = [...state.playOrder];
   state.currentVoter = 0;
+  state.pendingVote = null;
   showVoterScreen();
 }
 
@@ -18,12 +21,21 @@ function showVoterScreen() {
   const options = state.playerNames
     .map((name, i) => {
       if (i === voterIndex) return "";
+      const selected = state.pendingVote === i ? " selected" : "";
       return `
-        <button type="button" class="vote-option-btn" onclick="submitVote(${i})">
+        <button type="button" class="vote-option-btn${selected}" onclick="selectVote(${i})">
           <span class="vote-option-name">${name}</span>
         </button>`;
     })
     .join("");
+
+  const confirmBlock = state.pendingVote !== null
+    ? `<div class="vote-confirm-box">
+        <p class="vote-confirm-label">ရွေးချယ်ထားသော မဲ</p>
+        <p class="vote-confirm-name">${getPlayerName(state.pendingVote)}</p>
+        <button type="button" class="btn btn-blue vote-confirm-btn" onclick="confirmVote()">မဲအတည်ပြုမည်</button>
+      </div>`
+    : "";
 
   $("game-screen").innerHTML = `
     <div class="result-card voting-card">
@@ -36,13 +48,22 @@ function showVoterScreen() {
       </div>
       <p class="vote-hint">လူလိမ်ဟု သံသယရှိသူကို ရွေးပါ</p>
       <div class="vote-options">${options}</div>
+      ${confirmBlock}
     </div>`;
 }
 
-export function submitVote(targetIndex) {
+export function selectVote(targetIndex) {
+  playSound("click");
+  state.pendingVote = targetIndex;
+  showVoterScreen();
+}
+
+export function confirmVote() {
+  if (state.pendingVote === null) return;
   playSound("click");
   const voterIndex = state.voteOrder[state.currentVoter];
-  state.votes[voterIndex] = targetIndex;
+  state.votes[voterIndex] = state.pendingVote;
+  state.pendingVote = null;
   state.currentVoter++;
 
   if (state.currentVoter < state.totalPlayers) {

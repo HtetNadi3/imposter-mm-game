@@ -30,6 +30,7 @@ export function startGame() {
     return alert("Secret Mode တွင် အမျိုးအစားတစ်ခုသာ ရွေးပါ");
 
   state.selectedCategories = selected;
+  state.discussionMinutes = +($("timer-display")?.value || state.discussionMinutes);
   state.totalRounds = +($("round-count")?.value || 3);
   state.currentRound = 1;
   state.civilianWins = 0;

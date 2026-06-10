@@ -193,19 +193,36 @@ export function showDiscussionScreen() {
   startCountdown();
 }
 
+let countdownInterval = null;
+
+export function stopDiscussionTimer() {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+}
+
 function startCountdown() {
+  stopDiscussionTimer();
+
   let seconds = state.discussionMinutes * 60;
   const timerBox = $("timer-box");
   const alarm = $("alarm-sound");
 
-  const interval = setInterval(() => {
-    seconds--;
+  const updateDisplay = () => {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
-
     if (timerBox) {
       timerBox.innerText = `${min}:${sec < 10 ? "0" + sec : sec}`;
+      timerBox.classList.remove("timer-urgent", "timer-done");
     }
+  };
+
+  updateDisplay();
+
+  countdownInterval = setInterval(() => {
+    seconds--;
+    updateDisplay();
 
     if (seconds <= 10 && seconds > 0) {
       if (timerBox) timerBox.classList.add("timer-urgent");
@@ -213,7 +230,7 @@ function startCountdown() {
     }
 
     if (seconds <= 0) {
-      clearInterval(interval);
+      stopDiscussionTimer();
       if (timerBox) {
         timerBox.innerText = "အချိန်ပြည့်ပါပြီ!";
         timerBox.classList.add("timer-done");
@@ -243,6 +260,7 @@ function playFullAlarm(audio) {
 }
 
 export function revealImposters() {
+  stopDiscussionTimer();
   if (window.navigator && window.navigator.vibrate) {
     window.navigator.vibrate([60, 50, 60]);
   }

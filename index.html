@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imposter Myanmar Game</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6c63ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Imposter MM">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="stylesheet" href="imposter_mm.css">
 </head>
 
@@ -40,7 +46,8 @@
                 <div class="setting-row">
                     <span class="setting-label">အရေအတွက်</span>
                     <div class="stepper">
-                        <button type="button" onclick="changeValue('player-count', -1)" aria-label="လျှော့မည်">−</button>
+                        <button type="button" onclick="changeValue('player-count', -1)"
+                            aria-label="လျှော့မည်">−</button>
                         <input type="number" id="player-count" value="3" readonly>
                         <button type="button" onclick="changeValue('player-count', 1)" aria-label="တိုးမည်">+</button>
                     </div>
@@ -51,7 +58,8 @@
                 <div class="setting-row">
                     <span class="setting-label">လူလိမ်(Imposter)</span>
                     <div class="stepper">
-                        <button type="button" onclick="changeValue('imposter-count', -1)" aria-label="လျှော့မည်">−</button>
+                        <button type="button" onclick="changeValue('imposter-count', -1)"
+                            aria-label="လျှော့မည်">−</button>
                         <input type="number" id="imposter-count" value="1" readonly>
                         <button type="button" onclick="changeValue('imposter-count', 1)" aria-label="တိုးမည်">+</button>
                     </div>
@@ -64,7 +72,7 @@
                     <span class="setting-label">ဆွေးနွေးချိန် (မိနစ်)</span>
                     <div class="stepper">
                         <button type="button" onclick="changeTimer(-1)" aria-label="လျှော့မည်">−</button>
-                        <input type="number" id="timer-display" value="2" readonly>
+                        <input type="number" id="timer-display" value="5" readonly>
                         <button type="button" onclick="changeTimer(1)" aria-label="တိုးမည်">+</button>
                     </div>
                 </div>
@@ -159,7 +167,8 @@
                 <p><strong>ရည်ရွယ်ချက်:</strong> ရိုးရိုးကစားသမားများက ဘယ်သူဟာ လူလိမ်(Imposter)လဲ (သို့မဟုတ် မတူသော
                     စကားလုံးရသူ) ဆိုတာကို ရှာဖွေရမှာဖြစ်ပါတယ်။</p>
                 <p><strong>မဲပေးခြင်း:</strong> ဆွေးနွေးပြီးနောက် တစ်ယောက်ချင်းစီ လူလိမ်(Imposter)ဟု သံသယရှိသူကို
-                    မဲပေးပါ။ အများဆုံး မဲရရှိသူများထဲတွင် လူလိမ်(Imposter)အားလုံး ပါဝင်ပါက ရိုးရိုးကစားသမားများ အနိုင်ရပါသည်။
+                    မဲပေးပါ။ အများဆုံး မဲရရှိသူများထဲတွင် လူလိမ်(Imposter)အားလုံး ပါဝင်ပါက ရိုးရိုးကစားသမားများ
+                    အနိုင်ရပါသည်။
                     မဟုတ်ပါက လူလိမ်(Imposter)များ အနိုင်ရပါသည်။</p>
                 <p><strong>Round အရေအတွက်:</strong> ပုံမှန် ၃ Round ကစားနိုင်သည်။ Round တိုင်းတွင် စကားလုံးအသစ်
                     ရရှိပြီး ဆွေးနွေးပြီး မဲပေးကြပါ။</p>
@@ -169,6 +178,15 @@
     </div>
     <audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
     <script type="module" src="js/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.log('SW failed:', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

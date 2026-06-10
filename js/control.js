@@ -139,8 +139,7 @@ const TIMER_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export function changeTimer(delta) {
   let currentIndex = TIMER_OPTIONS.indexOf(state.discussionMinutes);
 
-  //Default to 2 min
-  if (currentIndex === -1) currentIndex = 1;
+  if (currentIndex === -1) currentIndex = TIMER_OPTIONS.indexOf(5);
 
   let nextIndex = currentIndex + delta;
 
