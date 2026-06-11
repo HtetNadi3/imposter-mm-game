@@ -30,11 +30,9 @@ function showVoterScreen() {
     .join("");
 
   const confirmBlock = state.pendingVote !== null
-    ? `<div class="vote-confirm-box">
-        <p class="vote-confirm-label">ရွေးချယ်ထားသော မဲ</p>
-        <p class="vote-confirm-name">${getPlayerName(state.pendingVote)}</p>
+    ? `
         <button type="button" class="btn btn-blue vote-confirm-btn" onclick="confirmVote()">မဲအတည်ပြုမည်</button>
-      </div>`
+      `
     : "";
 
   $("game-screen").innerHTML = `

@@ -42,7 +42,8 @@ body {
         radial-gradient(ellipse 70% 50% at 100% 100%, rgba(111, 113, 161, 0.15), transparent),
         radial-gradient(ellipse 50% 40% at 0% 80%, rgba(24, 163, 183, 0.1), transparent);
     color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* AFTER */
+    font-family: "Noto Sans Myanmar", -apple-system, BlinkMacSystemFont, sans-serif;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -127,13 +128,33 @@ body {
     flex-shrink: 0;
 }
 
-.row-icon--mode { color: var(--accent-steel); }
-.row-icon--players { color: var(--accent-green); }
-.row-icon--imposter { color: var(--accent-red); }
-.row-icon--timer { color: var(--accent-teal); }
-.row-icon--rounds { color: var(--accent-purple); }
-.row-icon--hint { color: var(--accent-steel); }
-.row-icon--category { color: var(--accent-teal); }
+.row-icon--mode {
+    color: var(--accent-steel);
+}
+
+.row-icon--players {
+    color: var(--accent-green);
+}
+
+.row-icon--imposter {
+    color: var(--accent-red);
+}
+
+.row-icon--timer {
+    color: var(--accent-teal);
+}
+
+.row-icon--rounds {
+    color: var(--accent-purple);
+}
+
+.row-icon--hint {
+    color: var(--accent-steel);
+}
+
+.row-icon--category {
+    color: var(--accent-teal);
+}
 
 .row-label {
     flex: 1;
@@ -309,7 +330,10 @@ body {
 }
 
 input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
 /* =======================
    HINT TOGGLE
@@ -322,7 +346,11 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     flex-shrink: 0;
 }
 
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
 
 .toggle-slider {
     position: absolute;
@@ -345,11 +373,11 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     transition: transform var(--transition), background var(--transition);
 }
 
-.toggle-switch input:checked + .toggle-slider {
+.toggle-switch input:checked+.toggle-slider {
     background: rgba(39, 230, 236, 0.25);
 }
 
-.toggle-switch input:checked + .toggle-slider::before {
+.toggle-switch input:checked+.toggle-slider::before {
     transform: translateX(20px);
     background: var(--accent-cyan);
 }
@@ -378,7 +406,9 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     font-weight: 500;
 }
 
-.category-card input { display: none; }
+.category-card input {
+    display: none;
+}
 
 .category-card:has(input:checked) {
     background: rgba(39, 230, 236, 0.1);
@@ -400,7 +430,9 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     transition: border-color var(--transition);
 }
 
-.category-box input[type="checkbox"] { display: none; }
+.category-box input[type="checkbox"] {
+    display: none;
+}
 
 .category-box:has(input:checked) {
     background: rgba(39, 230, 236, 0.1);
@@ -831,9 +863,20 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     font-size: 1.1rem;
 }
 
-.red-text { color: var(--accent-red); font-weight: 800; }
-.green-text { color: var(--accent-green); font-weight: 800; }
-.yellow-text { color: var(--accent-cyan); font-weight: 800; }
+.red-text {
+    color: var(--accent-red);
+    font-weight: 800;
+}
+
+.green-text {
+    color: var(--accent-green);
+    font-weight: 800;
+}
+
+.yellow-text {
+    color: var(--accent-cyan);
+    font-weight: 800;
+}
 
 .hidden-result {
     background: rgba(0, 0, 0, 0.25);
@@ -847,7 +890,9 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 /* =======================
    VOTING
    ======================= */
-.voting-card { text-align: center; }
+.voting-card {
+    text-align: center;
+}
 
 .vote-progress {
     font-size: 0.85rem;
@@ -956,16 +1001,23 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     margin-bottom: 4px;
 }
 
-.vote-row:last-child { margin-bottom: 0; }
+.vote-row:last-child {
+    margin-bottom: 0;
+}
 
 .vote-row-top {
     background: rgba(39, 230, 236, 0.08);
     border: 1px solid rgba(39, 230, 236, 0.15);
 }
 
-.vote-row-name { font-weight: 600; }
+.vote-row-name {
+    font-weight: 600;
+}
 
-.vote-row-count { color: var(--accent-cyan); font-weight: 700; }
+.vote-row-count {
+    color: var(--accent-cyan);
+    font-weight: 700;
+}
 
 .vote-badge {
     display: inline-block;
@@ -997,7 +1049,10 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     color: var(--text-muted);
 }
 
-.winner-icon { font-size: 2rem; display: block; }
+.winner-icon {
+    font-size: 2rem;
+    display: block;
+}
 
 .winner-civilians {
     background: rgba(50, 205, 50, 0.08);
@@ -1022,9 +1077,18 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     font-size: 0.9rem;
 }
 
-.score-civilians { color: var(--accent-green); }
-.score-imposters { color: var(--accent-red); }
-.score-divider { color: var(--text-muted); opacity: 0.5; }
+.score-civilians {
+    color: var(--accent-green);
+}
+
+.score-imposters {
+    color: var(--accent-red);
+}
+
+.score-divider {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
 
 .final-winner-banner {
     margin: 12px 0;
@@ -1132,6 +1196,7 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
    TOUCH & RESPONSIVE
    ======================= */
 @media (hover: none) and (pointer: coarse) {
+
     .stepper button,
     .category-card,
     .btn,

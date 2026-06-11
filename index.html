@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imposter Myanmar Game</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <meta name="theme-color" content="#1A334A">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,8 +32,7 @@
             </header>
 
             <div class="settings-card">
-                <button type="button" class="settings-row settings-row--nav" id="mode-row"
-                    onclick="toggleModePicker()">
+                <button type="button" class="settings-row settings-row--nav" id="mode-row" onclick="toggleModePicker()">
                     <svg class="row-icon row-icon--mode" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" aria-hidden="true">
                         <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -94,8 +97,7 @@
                             aria-label="လျှော့မည်">−</button>
                         <span class="stepper-value" id="imposter-count-display">1</span>
                         <input type="number" id="imposter-count" value="1" readonly hidden>
-                        <button type="button" onclick="changeValue('imposter-count', 1)"
-                            aria-label="တိုးမည်">+</button>
+                        <button type="button" onclick="changeValue('imposter-count', 1)" aria-label="တိုးမည်">+</button>
                     </div>
                 </div>
             </div>
@@ -124,12 +126,10 @@
                     </svg>
                     <span class="row-label">Round</span>
                     <div class="stepper stepper--inline">
-                        <button type="button" onclick="changeValue('round-count', -1)"
-                            aria-label="လျှော့မည်">−</button>
+                        <button type="button" onclick="changeValue('round-count', -1)" aria-label="လျှော့မည်">−</button>
                         <span class="stepper-value" id="round-count-display">3</span>
                         <input type="number" id="round-count" value="3" readonly hidden>
-                        <button type="button" onclick="changeValue('round-count', 1)"
-                            aria-label="တိုးမည်">+</button>
+                        <button type="button" onclick="changeValue('round-count', 1)" aria-label="တိုးမည်">+</button>
                     </div>
                 </div>
 
