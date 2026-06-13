@@ -31,7 +31,7 @@ export function startGame() {
 
   state.selectedCategories = selected;
   state.discussionMinutes = +($("timer-display")?.value || state.discussionMinutes);
-  state.totalRounds = +($("round-count")?.value || 3);
+  state.totalRounds = Infinity;
   state.currentRound = 1;
   state.civilianWins = 0;
   state.imposterWins = 0;

@@ -29,11 +29,12 @@ function showVoterScreen() {
     })
     .join("");
 
-  const confirmBlock = state.pendingVote !== null
-    ? `
+  const confirmBlock =
+    state.pendingVote !== null
+      ? `
         <button type="button" class="btn btn-blue vote-confirm-btn" onclick="confirmVote()">မဲအတည်ပြုမည်</button>
       `
-    : "";
+      : "";
 
   $("game-screen").innerHTML = `
     <div class="result-card voting-card">
@@ -108,14 +109,16 @@ function showVoteResults() {
   else state.imposterWins++;
 
   const isSecret = state.gameMode === "secret";
-  const hasMoreRounds = state.currentRound < state.totalRounds;
-  const isFinalRound = !hasMoreRounds;
+  const hasMoreRounds = true;
+  const isFinalRound = false;
 
   const voteBreakdown = state.playerNames
     .map((name, i) => {
       const isImposter = state.imposters.includes(i);
       const isTop = topVoted.includes(i);
-      const badge = isImposter ? '<span class="vote-badge imposter-badge">လူလိမ်</span>' : "";
+      const badge = isImposter
+        ? '<span class="vote-badge imposter-badge">လူလိမ်</span>'
+        : "";
       const highlight = isTop ? " vote-row-top" : "";
       return `
         <div class="vote-row${highlight}">
@@ -154,33 +157,36 @@ function showVoteResults() {
       <p>စကားလုံး:</p>
       <h3 class="green-text">${state.secretWord}</h3>`;
 
-  const roundLabel = state.totalRounds > 1
-    ? `<p class="round-badge-inline">Round ${state.currentRound} / ${state.totalRounds}</p>`
-    : "";
+  const roundLabel =
+    state.totalRounds > 1
+      ? `<p class="round-badge-inline">Round ${state.currentRound} / ${state.totalRounds}</p>`
+      : "";
 
-  const scoreBlock = state.totalRounds > 1
-    ? `<div class="score-summary">
+  const scoreBlock =
+    state.totalRounds > 1
+      ? `<div class="score-summary">
         <span class="score-civilians">ရိုးရိုး ${state.civilianWins}</span>
         <span class="score-divider">—</span>
         <span class="score-imposters">လူလိမ် ${state.imposterWins}</span>
       </div>`
-    : "";
+      : "";
 
-  const finalSummary = isFinalRound && state.totalRounds > 1
-    ? `<div class="final-winner-banner ${state.civilianWins > state.imposterWins ? "winner-civilians" : state.imposterWins > state.civilianWins ? "winner-imposters" : ""}">
+  const finalSummary =
+    isFinalRound && state.totalRounds > 1
+      ? `<div class="final-winner-banner ${state.civilianWins > state.imposterWins ? "winner-civilians" : state.imposterWins > state.civilianWins ? "winner-imposters" : ""}">
         <h2 class="yellow-text">ဂိမ်းပြီးဆုံးပါပြီ!</h2>
-        <p>${state.civilianWins > state.imposterWins
-          ? "ရိုးရိုးကစားသမားများ စုစုပေါင်း အနိုင်ရ!"
-          : state.imposterWins > state.civilianWins
-            ? "လူလိမ်များ စုစုပေါင်း အနိုင်ရ!"
-            : "သရေကျပါတယ်!"}</p>
+        <p>${
+          state.civilianWins > state.imposterWins
+            ? "ရိုးရိုးကစားသမားများ စုစုပေါင်း အနိုင်ရ!"
+            : state.imposterWins > state.civilianWins
+              ? "လူလိမ်များ စုစုပေါင်း အနိုင်ရ!"
+              : "သရေကျပါတယ်!"
+        }</p>
       </div>`
-    : "";
+      : "";
 
-  const actionButtons = hasMoreRounds
-    ? `<button class="btn btn-blue" onclick="startNextRound()">နောက် Round (${state.currentRound + 1}/${state.totalRounds})</button>
-       <button class="btn btn-secondary" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>`
-    : `<button class="btn btn-blue" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>`;
+  const actionButtons = `<button class="btn btn-blue" onclick="startNextRound()">နောက် Round (${state.currentRound + 1})</button>
+   <button class="btn btn-secondary" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>`;
 
   $("game-screen").innerHTML = `
     <div class="result-card">
@@ -200,4 +206,3 @@ function showVoteResults() {
       ${actionButtons}
     </div>`;
 }
-
