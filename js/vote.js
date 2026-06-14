@@ -200,7 +200,7 @@ function showVoteResults() {
       : "";
 
   const actionButtons = `<button class="btn btn-blue" onclick="startNextRound()">နောက် Round (${state.currentRound + 1})</button>
-   <button class="btn btn-secondary" onclick="location.reload(true)">ဂိမ်းအသစ်စတင်မည်</button>`;
+   <button class="btn btn-secondary" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>`;
 
   $("game-screen").innerHTML = `
     <div class="result-card">

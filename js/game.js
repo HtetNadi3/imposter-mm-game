@@ -1,9 +1,19 @@
 import { WORD_CATEGORIES } from "./data.js";
 import { $ } from "./dom.js";
-import { state } from "./state.js";
-import { updateTurn, showDiscussionScreen, renderGameBoard } from "./ui.js";
+import { state, resetState } from "./state.js";
+import {
+  updateTurn,
+  showDiscussionScreen,
+  renderGameBoard,
+  stopDiscussionTimer,
+} from "./ui.js";
+import {
+  collectPlayerNames,
+  getSelectedCategories,
+  renderPlayerNameInputs,
+  initSetupUI,
+} from "./control.js";
 import { playSound } from "./audio.js";
-import { collectPlayerNames, getSelectedCategories } from "./control.js";
 import { sessionStats, initPlayerStats } from "./stats.js";
 
 function shuffleArray(arr) {
@@ -144,6 +154,38 @@ export function nextTurn() {
   state.currentPlayer < state.totalPlayers
     ? updateTurn()
     : showDiscussionScreen();
+}
+
+export function startNewGame() {
+  playSound("click");
+  stopDiscussionTimer();
+  resetState();
+
+  const gameScreen = $("game-screen");
+  const setupScreen = $("setup-screen");
+
+  gameScreen.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+  gameScreen.style.opacity = "0";
+  gameScreen.style.transform = "translateX(20px)";
+
+  setTimeout(() => {
+    gameScreen.style.display = "none";
+    gameScreen.style.opacity = "";
+    gameScreen.style.transform = "";
+
+    setupScreen.style.display = "block";
+    setupScreen.style.opacity = "0";
+    setupScreen.style.transform = "translateX(-20px)";
+    setupScreen.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+
+    renderPlayerNameInputs();
+    initSetupUI();
+
+    requestAnimationFrame(() => {
+      setupScreen.style.opacity = "1";
+      setupScreen.style.transform = "translateX(0)";
+    });
+  }, 400);
 }
 
 export function startNextRound() {

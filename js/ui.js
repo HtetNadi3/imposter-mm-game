@@ -194,7 +194,7 @@ export function showDiscussionScreen() {
         <span class="starter-name">${starterName}</span>
       </div>
       <button id="vote-btn" class="btn btn-blue" onclick="startVoting()">မဲပေးမည်</button>
-      <button class="btn btn-secondary" onclick="location.reload(true)">ဂိမ်းအသစ်စတင်မည်</button>
+      <button class="btn btn-secondary" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>
     </div>`;
 
   startCountdown();
@@ -297,6 +297,6 @@ export function revealImposters() {
       <div class="answer-box">
         ${revealBlock}
       </div>
-      <button class="btn btn-blue" onclick="location.reload(true)">ဂိမ်းအသစ်စတင်မည်</button>
+      <button class="btn btn-blue" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>
     </div>`;
 }

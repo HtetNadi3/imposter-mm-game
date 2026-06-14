@@ -1,12 +1,12 @@
-export const state = { 
-    totalPlayers: 0, 
-    currentPlayer: 0, 
+const DEFAULT_STATE = {
+    totalPlayers: 0,
+    currentPlayer: 0,
     playOrder: [],
     playerNames: [],
-    imposters: [], 
-    secretWord: "", 
+    imposters: [],
+    secretWord: "",
     imposterWord: "",
-    useWords: [], 
+    useWords: [],
     discussionMinutes: 5,
     hintMode: false,
     gameMode: "classic",
@@ -22,6 +22,12 @@ export const state = {
     gameNumber: 0
 };
 
+export const state = structuredClone(DEFAULT_STATE);
+
 export function getPlayerName(index) {
     return state.playerNames[index] || `Player ${index + 1}`;
+}
+
+export function resetState() {
+    Object.assign(state, structuredClone(DEFAULT_STATE));
 }
