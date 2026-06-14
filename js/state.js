@@ -18,7 +18,8 @@ export const state = {
     currentRound: 1,
     selectedCategories: [],
     civilianWins: 0,
-    imposterWins: 0
+    imposterWins: 0,
+    gameNumber: 0
 };
 
 export function getPlayerName(index) {

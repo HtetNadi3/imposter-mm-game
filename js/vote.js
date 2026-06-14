@@ -1,4 +1,5 @@
 import { state, getPlayerName } from "./state.js";
+import { recordRoundStats, renderScoreboard } from "./stats.js";
 import { $ } from "./dom.js";
 import { playSound } from "./audio.js";
 import { stopDiscussionTimer } from "./ui.js";
@@ -108,22 +109,38 @@ function showVoteResults() {
   if (civiliansWin) state.civilianWins++;
   else state.imposterWins++;
 
+  recordRoundStats({
+    playerNames: state.playerNames,
+    imposters: state.imposters,
+    civiliansWin,
+    topVoted,
+    counts,
+  });
+
   const isSecret = state.gameMode === "secret";
   const hasMoreRounds = true;
   const isFinalRound = false;
 
+  const maxCount = Math.max(...counts, 1);
   const voteBreakdown = state.playerNames
     .map((name, i) => {
       const isImposter = state.imposters.includes(i);
       const isTop = topVoted.includes(i);
       const badge = isImposter
-        ? '<span class="vote-badge imposter-badge">လူလိမ်</span>'
+        ? `<span class="vote-badge imposter-badge">လူလိမ်</span>`
         : "";
-      const highlight = isTop ? " vote-row-top" : "";
+      const pct = Math.round((counts[i] / maxCount) * 100);
       return `
-        <div class="vote-row${highlight}">
-          <span class="vote-row-name">${name}${badge}</span>
-          <span class="vote-row-count">${counts[i]} မဲ</span>
+        <div class="vote-row${isTop ? " vote-row-top" : ""}">
+          <div class="vote-row-left">
+            <div class="vote-row-namerow">
+              <span class="vote-row-name">${name}</span>${badge}
+            </div>
+            <div class="vote-bar-bg">
+              <div class="vote-bar${isTop ? " vote-bar-top" : ""}" style="width:${pct}%"></div>
+            </div>
+          </div>
+          <span class="vote-row-count">${counts[i]}</span>
         </div>`;
     })
     .join("");
@@ -133,29 +150,26 @@ function showVoteResults() {
 
   const winnerBlock = civiliansWin
     ? `<div class="winner-banner winner-civilians">
-        <span class="winner-icon">🎉</span>
-        <h2 class="green-text">ရိုးရိုးကစားသမားများ အနိုင်ရ!</h2>
-        <p>လူလိမ်များကို မှန်ကန်စွာ ဖော်ထုတ်နိုင်ခဲ့ပါတယ်</p>
+        <span class="winner-eyebrow">အနိုင်ရသူ</span>
+        <span class="winner-main green-text">ရိုးရိုးကစားသမားများ</span>
+        <span class="winner-sub">လူလိမ်ကို မှန်ကန်စွာ ဖော်ထုတ်နိုင်ခဲ့သည်</span>
       </div>`
     : `<div class="winner-banner winner-imposters">
-        <span class="winner-icon">🎭</span>
-        <h2 class="red-text">လူလိမ်များ အနိုင်ရ!</h2>
-        <p>လူလိမ်များက လွှတ်မြောက်နိုင်ခဲ့ပါတယ်</p>
+        <span class="winner-eyebrow">အနိုင်ရသူ</span>
+        <span class="winner-main red-text">လူလိမ်များ</span>
+        <span class="winner-sub">လူလိမ်များ လွှတ်မြောက်နိုင်ခဲ့သည်</span>
       </div>`;
 
   const revealBlock = isSecret
-    ? `
-      <p>လူလိမ်များ:</p>
-      <h3 class="red-text">${imposterNames}</h3>
-      <p>အများစု စကားလုံး:</p>
-      <h3 class="green-text">${state.secretWord}</h3>
-      <p>လူလိမ် စကားလုံး:</p>
-      <h3 class="yellow-text">${state.imposterWord}</h3>`
-    : `
-      <p>လူလိမ်များ:</p>
-      <h3 class="red-text">${imposterNames}</h3>
-      <p>စကားလုံး:</p>
-      <h3 class="green-text">${state.secretWord}</h3>`;
+    ? `<div class="reveal-grid">
+        <div class="reveal-cell"><span class="reveal-label">လူလိမ်</span><span class="reveal-val red-text">${imposterNames}</span></div>
+        <div class="reveal-cell"><span class="reveal-label">ဘုံစကားလုံး</span><span class="reveal-val green-text">${state.secretWord}</span></div>
+        <div class="reveal-cell"><span class="reveal-label">လူလိမ် စကားလုံး</span><span class="reveal-val yellow-text">${state.imposterWord}</span></div>
+      </div>`
+    : `<div class="reveal-grid">
+        <div class="reveal-cell"><span class="reveal-label">လူလိမ်</span><span class="reveal-val red-text">${imposterNames}</span></div>
+        <div class="reveal-cell"><span class="reveal-label">စကားလုံး</span><span class="reveal-val green-text">${state.secretWord}</span></div>
+      </div>`;
 
   const roundLabel =
     state.totalRounds > 1
@@ -186,23 +200,23 @@ function showVoteResults() {
       : "";
 
   const actionButtons = `<button class="btn btn-blue" onclick="startNextRound()">နောက် Round (${state.currentRound + 1})</button>
-   <button class="btn btn-secondary" onclick="location.reload()">ဂိမ်းအသစ်စတင်မည်</button>`;
+   <button class="btn btn-secondary" onclick="location.reload(true)">ဂိမ်းအသစ်စတင်မည်</button>`;
 
   $("game-screen").innerHTML = `
     <div class="result-card">
-      ${roundLabel}
-      <h1 class="yellow-text">မဲရလဒ်</h1>
+      <div class="result-header-row">
+        <span class="result-title">မဲရလဒ်</span>
+        ${roundLabel}
+      </div>
       ${scoreBlock}
       ${winnerBlock}
       <div class="vote-results-box">
         <p class="section-title">မဲစာရင်း</p>
         ${voteBreakdown}
       </div>
-      <p>အများဆုံး မဲရသူ: <strong class="yellow-text">${topNames}</strong></p>
-      <div class="hidden-result" style="display:block;">
-        ${revealBlock}
-      </div>
+      <div class="reveal-box">${revealBlock}</div>
       ${finalSummary}
-      ${actionButtons}
+      ${renderScoreboard(state.playerNames)}
+      <div class="result-actions">${actionButtons}</div>
     </div>`;
 }

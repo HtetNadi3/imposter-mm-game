@@ -4,6 +4,7 @@ import { state } from "./state.js";
 import { updateTurn, showDiscussionScreen, renderGameBoard } from "./ui.js";
 import { playSound } from "./audio.js";
 import { collectPlayerNames, getSelectedCategories } from "./control.js";
+import { sessionStats, initPlayerStats } from "./stats.js";
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -15,7 +16,7 @@ function shuffleArray(arr) {
 }
 
 export function startGame() {
-  playSound('click');
+  playSound("click");
   state.totalPlayers = +$("player-count").value;
   const imposterCount = +$("imposter-count").value;
 
@@ -30,9 +31,14 @@ export function startGame() {
     return alert("Secret Mode တွင် အမျိုးအစားတစ်ခုသာ ရွေးပါ");
 
   state.selectedCategories = selected;
-  state.discussionMinutes = +($("timer-display")?.value || state.discussionMinutes);
+  state.discussionMinutes = +(
+    $("timer-display")?.value || state.discussionMinutes
+  );
   state.totalRounds = Infinity;
   state.currentRound = 1;
+  state.gameNumber++;
+  sessionStats.gameCount = state.gameNumber;
+  initPlayerStats(state.playerNames);
   state.civilianWins = 0;
   state.imposterWins = 0;
   if (!assignRoundWords()) return;
@@ -46,7 +52,7 @@ export function startGame() {
 
   // Randomize turn order
   state.playOrder = shuffleArray(
-    Array.from({ length: state.totalPlayers }, (_, i) => i)
+    Array.from({ length: state.totalPlayers }, (_, i) => i),
   );
   state.currentPlayer = 0;
 
@@ -54,8 +60,9 @@ export function startGame() {
   const alarm = $("alarm-sound");
   if (alarm) {
     alarm.muted = true;
-    
-    alarm.play()
+
+    alarm
+      .play()
       .then(() => {
         alarm.pause();
         alarm.muted = false;
@@ -69,16 +76,16 @@ export function startGame() {
   const setupScreen = $("setup-screen");
   const gameScreen = $("game-screen");
 
-  setupScreen.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-  setupScreen.style.opacity = '0';
-  setupScreen.style.transform = 'translateX(-20px)';
+  setupScreen.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+  setupScreen.style.opacity = "0";
+  setupScreen.style.transform = "translateX(-20px)";
 
   setTimeout(() => {
     setupScreen.style.display = "none";
     gameScreen.style.display = "block";
-    gameScreen.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-    gameScreen.style.opacity = '1';
-    gameScreen.style.transform = 'translateX(0)';
+    gameScreen.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+    gameScreen.style.opacity = "1";
+    gameScreen.style.transform = "translateX(0)";
     renderGameBoard();
     updateTurn();
   }, 400);
@@ -122,7 +129,8 @@ function setupSecretModeWords(category) {
   let imposterWord = pickFreshWord(imposterPool);
 
   if (imposterWord === civilianWord) {
-    imposterWord = imposterPool.find((w) => w !== civilianWord) || imposterPool[0];
+    imposterWord =
+      imposterPool.find((w) => w !== civilianWord) || imposterPool[0];
   }
 
   state.secretWord = civilianWord;
@@ -131,7 +139,7 @@ function setupSecretModeWords(category) {
 }
 
 export function nextTurn() {
-  playSound('click');
+  playSound("click");
   state.currentPlayer++;
   state.currentPlayer < state.totalPlayers
     ? updateTurn()
@@ -139,12 +147,19 @@ export function nextTurn() {
 }
 
 export function startNextRound() {
-  playSound('click');
+  playSound("click");
   state.currentRound++;
   state.currentPlayer = 0;
   state.playOrder = shuffleArray(
-    Array.from({ length: state.totalPlayers }, (_, i) => i)
+    Array.from({ length: state.totalPlayers }, (_, i) => i),
   );
+
+  const imposterCount = state.imposters.length;
+  state.imposters = [];
+  while (state.imposters.length < imposterCount) {
+    const r = Math.floor(Math.random() * state.totalPlayers);
+    if (!state.imposters.includes(r)) state.imposters.push(r);
+  }
 
   if (!assignRoundWords()) return;
 
