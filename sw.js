@@ -1,4 +1,4 @@
-const CACHE_NAME = 'imposter-mm-v2';
+const CACHE_NAME = 'imposter-mm-v6';
 
 const ASSETS_TO_CACHE = [
   './',

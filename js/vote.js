@@ -10,7 +10,7 @@ export function startVoting() {
   state.votes = new Array(state.totalPlayers).fill(null);
   state.voteOrder = [...state.playOrder];
   state.currentVoter = 0;
-  state.pendingVote = null;
+  state.pendingVotes = [];
   showVoterScreen();
 }
 
@@ -18,11 +18,12 @@ function showVoterScreen() {
   const voterIndex = state.voteOrder[state.currentVoter];
   const voterName = getPlayerName(voterIndex);
   const progress = `${state.currentVoter + 1} / ${state.totalPlayers}`;
+  const voteLimit = state.imposters.length;
 
   const options = state.playerNames
     .map((name, i) => {
       if (i === voterIndex) return "";
-      const selected = state.pendingVote === i ? " selected" : "";
+      const selected = state.pendingVotes.includes(i) ? " selected" : "";
       return `
         <button type="button" class="vote-option-btn${selected}" onclick="selectVote(${i})">
           <span class="vote-option-name">${name}</span>
@@ -31,7 +32,7 @@ function showVoterScreen() {
     .join("");
 
   const confirmBlock =
-    state.pendingVote !== null
+    state.pendingVotes.length === voteLimit
       ? `
         <button type="button" class="btn btn-blue vote-confirm-btn" onclick="confirmVote()">မဲအတည်ပြုမည်</button>
       `
@@ -46,7 +47,7 @@ function showVoterScreen() {
         <span class="voter-label">မင်းရဲ့ မဲ</span>
         <span class="voter-name">${voterName}</span>
       </div>
-      <p class="vote-hint">လူလိမ်ဟု သံသယရှိသူကို ရွေးပါ</p>
+      <p class="vote-hint">လူလိမ်ဟု သံသယရှိသူ ${voteLimit} ဦးကို ရွေးပါ (${state.pendingVotes.length}/${voteLimit})</p>
       <div class="vote-options">${options}</div>
       ${confirmBlock}
     </div>`;
@@ -54,16 +55,25 @@ function showVoterScreen() {
 
 export function selectVote(targetIndex) {
   playSound("click");
-  state.pendingVote = targetIndex;
+  const voteLimit = state.imposters.length;
+  const idx = state.pendingVotes.indexOf(targetIndex);
+
+  if (idx !== -1) {
+    state.pendingVotes.splice(idx, 1);
+  } else if (state.pendingVotes.length < voteLimit) {
+    state.pendingVotes.push(targetIndex);
+  }
   showVoterScreen();
 }
 
 export function confirmVote() {
-  if (state.pendingVote === null) return;
+  const voteLimit = state.imposters.length;
+  if (state.pendingVotes.length !== voteLimit) return;
+
   playSound("click");
   const voterIndex = state.voteOrder[state.currentVoter];
-  state.votes[voterIndex] = state.pendingVote;
-  state.pendingVote = null;
+  state.votes[voterIndex] = [...state.pendingVotes];
+  state.pendingVotes = [];
   state.currentVoter++;
 
   if (state.currentVoter < state.totalPlayers) {
@@ -75,8 +85,8 @@ export function confirmVote() {
 
 function tallyVotes() {
   const counts = new Array(state.totalPlayers).fill(0);
-  state.votes.forEach((target) => {
-    if (target !== null) counts[target]++;
+  state.votes.forEach((targets) => {
+    if (targets) targets.forEach((t) => counts[t]++);
   });
   return counts;
 }

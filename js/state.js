@@ -13,7 +13,7 @@ const DEFAULT_STATE = {
     votes: [],
     currentVoter: 0,
     voteOrder: [],
-    pendingVote: null,
+    pendingVotes: [],
     totalRounds: 3,
     currentRound: 1,
     selectedCategories: [],

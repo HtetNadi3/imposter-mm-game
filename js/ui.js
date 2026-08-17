@@ -194,6 +194,7 @@ export function showDiscussionScreen() {
         <span class="starter-name">${starterName}</span>
       </div>
       <button id="vote-btn" class="btn btn-blue" onclick="startVoting()">မဲပေးမည်</button>
+      <button class="btn btn-secondary" onclick="revealImposters()">အဖြေတိုက်ရိုက်ကြည့်မည်</button>
       <button class="btn btn-secondary" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>
     </div>`;
 
@@ -293,10 +294,11 @@ export function revealImposters() {
   $("game-screen").innerHTML = `
     <div class="result-card">
       <span class="phase-tag">အဖြေ</span>
-      <h1 class="phase-title yellow-text">အဖြေ</h1>
       <div class="answer-box">
         ${revealBlock}
       </div>
-      <button class="btn btn-blue" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>
+      <button class="btn btn-blue" onclick="startNextRound()">နောက် Round (${state.currentRound + 1})</button>
+      <button class="btn btn-secondary" onclick="showDiscussionScreen()">ဆွေးနွေးချိန်သို့ ပြန်သွားမည်</button>
+      <button class="btn btn-secondary" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>
     </div>`;
 }
