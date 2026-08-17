@@ -1,0 +1,15 @@
+{
+  "name": "imposter-mm-server",
+  "version": "1.0.0",
+  "description": "Lightweight WebSocket relay for Imposter MM online mode",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "start:https": "node index.js --https"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

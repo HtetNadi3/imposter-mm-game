@@ -3,6 +3,10 @@ import { recordRoundStats, renderScoreboard } from "./stats.js";
 import { $ } from "./dom.js";
 import { playSound } from "./audio.js";
 import { stopDiscussionTimer } from "./ui.js";
+import {
+  notifyHostVotingStarted,
+  notifyHostVoteResultsReady,
+} from "./online-bridge.js";
 
 export function startVoting() {
   stopDiscussionTimer();
@@ -11,6 +15,12 @@ export function startVoting() {
   state.voteOrder = [...state.playOrder];
   state.currentVoter = 0;
   state.pendingVotes = [];
+
+  if (state.playMode === "online") {
+    notifyHostVotingStarted();
+    return;
+  }
+
   showVoterScreen();
 }
 
@@ -69,17 +79,62 @@ export function selectVote(targetIndex) {
 export function confirmVote() {
   const voteLimit = state.imposters.length;
   if (state.pendingVotes.length !== voteLimit) return;
+  const voterIndex = state.voteOrder[state.currentVoter];
+  confirmVoteForPlayer(voterIndex);
+}
+
+/** Apply a vote for a specific player (used by online host relay) */
+export function applyVoteForPlayer(voterIndex, votes) {
+  state.votes[voterIndex] = [...votes];
+}
+
+/** Offline sequential confirm, or reusable path for a given voter index */
+export function confirmVoteForPlayer(voterIndex) {
+  const voteLimit = state.imposters.length;
+  const votes =
+    voterIndex === state.voteOrder[state.currentVoter]
+      ? state.pendingVotes
+      : null;
+
+  if (!votes || votes.length !== voteLimit) return;
 
   playSound("click");
-  const voterIndex = state.voteOrder[state.currentVoter];
-  state.votes[voterIndex] = [...state.pendingVotes];
+  applyVoteForPlayer(voterIndex, votes);
   state.pendingVotes = [];
   state.currentVoter++;
+
+  if (state.playMode === "online") return;
 
   if (state.currentVoter < state.totalPlayers) {
     showVoterScreen();
   } else {
-    showVoteResults();
+    finalizeVoteResults();
+  }
+}
+
+/** Connected players who have not yet voted (online mode) */
+export function getConnectedVotersPending() {
+  const connected = state.connectedPlayerIndices || new Set();
+  return [...Array(state.totalPlayers).keys()].filter(
+    (i) => connected.has(i) && state.votes[i] === null,
+  );
+}
+
+export function countCompletedVotes() {
+  const connected = state.connectedPlayerIndices || new Set();
+  const voters = [...Array(state.totalPlayers).keys()].filter((i) =>
+    connected.has(i),
+  );
+  const voted = voters.filter((i) => state.votes[i] !== null).length;
+  return { voted, total: voters.length };
+}
+
+export function finalizeVoteResults() {
+  const html = buildVoteResultsHtml();
+  $("game-screen").innerHTML = html;
+
+  if (state.playMode === "online" && state.isHost) {
+    notifyHostVoteResultsReady(html);
   }
 }
 
@@ -110,6 +165,10 @@ export function calculateWinner() {
 }
 
 function showVoteResults() {
+  finalizeVoteResults();
+}
+
+export function buildVoteResultsHtml() {
   if (window.navigator && window.navigator.vibrate) {
     window.navigator.vibrate([60, 50, 60]);
   }
@@ -128,7 +187,6 @@ function showVoteResults() {
   });
 
   const isSecret = state.gameMode === "secret";
-  const hasMoreRounds = true;
   const isFinalRound = false;
 
   const maxCount = Math.max(...counts, 1);
@@ -155,7 +213,6 @@ function showVoteResults() {
     })
     .join("");
 
-  const topNames = topVoted.map((i) => getPlayerName(i)).join(", ");
   const imposterNames = state.imposters.map((i) => getPlayerName(i)).join(", ");
 
   const winnerBlock = civiliansWin
@@ -212,7 +269,7 @@ function showVoteResults() {
   const actionButtons = `<button class="btn btn-blue" onclick="startNextRound()">နောက် Round (${state.currentRound + 1})</button>
    <button class="btn btn-secondary" onclick="startNewGame()">ဂိမ်းအသစ်စတင်မည်</button>`;
 
-  $("game-screen").innerHTML = `
+  return `
     <div class="result-card">
       <div class="result-header-row">
         <span class="result-title">မဲရလဒ်</span>

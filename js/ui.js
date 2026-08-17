@@ -2,6 +2,7 @@ import { state, getPlayerName } from "./state.js";
 import { $ } from "./dom.js";
 import { WORD_HINTS } from "./data.js";
 import { playSound } from "./audio.js";
+import { notifyHostDiscussionStarted } from "./online-bridge.js";
 
 export function updateMuteButton(isMuted) {
   const muteIcon = document.getElementById("mute-icon");
@@ -199,6 +200,10 @@ export function showDiscussionScreen() {
     </div>`;
 
   startCountdown();
+
+  if (state.playMode === "online" && state.isHost) {
+    notifyHostDiscussionStarted(starterName);
+  }
 }
 
 let countdownInterval = null;
@@ -268,6 +273,10 @@ function playFullAlarm(audio) {
 }
 
 export function revealImposters() {
+  // The direct reveal is a host-only, local action in online games.  Do not
+  // let a client display the answer if this function is invoked unexpectedly.
+  if (state.playMode === "online" && !state.isHost) return;
+
   stopDiscussionTimer();
   if (window.navigator && window.navigator.vibrate) {
     window.navigator.vibrate([60, 50, 60]);

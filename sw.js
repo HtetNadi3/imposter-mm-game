@@ -1,4 +1,4 @@
-const CACHE_NAME = 'imposter-mm-v6';
+const CACHE_NAME = 'imposter-mm-v12';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -8,6 +8,7 @@ const ASSETS_TO_CACHE = [
   './alarm.mp3',
   './js/main.js',
   './js/audio.js',
+  './js/chat.js',
   './js/control.js',
   './js/data.js',
   './js/dom.js',
@@ -15,6 +16,11 @@ const ASSETS_TO_CACHE = [
   './js/state.js',
   './js/ui.js',
   './js/vote.js',
+  './js/net.js',
+  './js/online.js',
+  './js/online-ui.js',
+  './js/online-bridge.js',
+  './js/stats.js',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
@@ -36,17 +42,26 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Only cache same-origin http(s) requests — skip chrome-extension, fonts CDN, etc.
+  if (url.origin !== self.location.origin) return;
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((response) => {
+        if (response.ok && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }
         return response;
       });
     }).catch(() => {
-      if (event.request.mode === 'navigate') return caches.match('./index.html');
+      if (request.mode === 'navigate') return caches.match('./index.html');
+      return Response.error();
     })
   );
 });

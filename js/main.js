@@ -3,6 +3,7 @@ import { toggleReveal, showDiscussionScreen, revealImposters } from "./ui.js";
 import { startVoting, selectVote, confirmVote } from "./vote.js";
 import { toggleAllCategories, handleIndividualChange, changeValue, toggleRules, changeTimer, toggleHintMode, renderPlayerNameInputs, setGameMode, toggleModePicker, togglePlayerNames, toggleCategories, initSetupUI } from "./control.js";
 import { playSound, toggleMute } from "./audio.js";
+import { initOnline } from "./online.js";
 
 window.startGame = startGame;
 window.nextTurn = nextTurn;
@@ -26,5 +27,4 @@ window.startNextRound = startNextRound;
 window.startNewGame = startNewGame;
 window.toggleMute = toggleMute;
 
-renderPlayerNameInputs();
-initSetupUI();
+initOnline();

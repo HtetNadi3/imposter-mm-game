@@ -19,7 +19,14 @@ const DEFAULT_STATE = {
     selectedCategories: [],
     civilianWins: 0,
     imposterWins: 0,
-    gameNumber: 0
+    gameNumber: 0,
+    // Online multiplayer (host-relay model)
+    playMode: "offline", // "offline" | "online"
+    isHost: false,
+    playerIndex: null,
+    roomCode: "",
+    sessionToken: "",
+    connectedPlayerIndices: new Set(),
 };
 
 export const state = structuredClone(DEFAULT_STATE);

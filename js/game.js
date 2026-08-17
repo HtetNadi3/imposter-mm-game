@@ -15,6 +15,8 @@ import {
 } from "./control.js";
 import { playSound } from "./audio.js";
 import { sessionStats, initPlayerStats } from "./stats.js";
+import { notifyHostGameStarted, notifyHostNextRoundStarted } from "./online-bridge.js";
+import { cleanupOnlineForNewGame, showModeSelectScreen } from "./online.js";
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -96,6 +98,13 @@ export function startGame() {
     gameScreen.style.transition = "opacity 0.4s ease, transform 0.4s ease";
     gameScreen.style.opacity = "1";
     gameScreen.style.transform = "translateX(0)";
+
+    if (state.playMode === "online" && state.isHost) {
+      renderGameBoard();
+      notifyHostGameStarted();
+      return;
+    }
+
     renderGameBoard();
     updateTurn();
   }, 400);
@@ -159,6 +168,9 @@ export function nextTurn() {
 export function startNewGame() {
   playSound("click");
   stopDiscussionTimer();
+
+  const wasOnline = state.playMode === "online";
+  cleanupOnlineForNewGame();
   resetState();
 
   const gameScreen = $("game-screen");
@@ -172,6 +184,11 @@ export function startNewGame() {
     gameScreen.style.display = "none";
     gameScreen.style.opacity = "";
     gameScreen.style.transform = "";
+
+    if (wasOnline) {
+      showModeSelectScreen();
+      return;
+    }
 
     setupScreen.style.display = "block";
     setupScreen.style.opacity = "0";
@@ -206,5 +223,11 @@ export function startNextRound() {
   if (!assignRoundWords()) return;
 
   renderGameBoard();
+
+  if (state.playMode === "online" && state.isHost) {
+    notifyHostNextRoundStarted();
+    return;
+  }
+
   updateTurn();
 }
